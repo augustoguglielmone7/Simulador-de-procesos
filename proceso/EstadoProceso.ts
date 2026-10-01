@@ -3,5 +3,6 @@ export enum estadoProceso {
     Listo = "Listo",
     Ejecutando = "Ejecutando",
     Bloqueado = "Bloqueado",
-    Terminado = "Terminado"
+    Terminado = "Terminado",
+    EsperandoMemoria = "EsperandoMemoria"
 }
