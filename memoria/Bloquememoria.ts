@@ -7,6 +7,9 @@ export class bloqueMemoria {
     public estaLibre(): boolean {
         return this.pidProceso === null;
     }
+    public cambiarTamanio(nuevoTamanio: number): void {
+    this.tamanio = nuevoTamanio;
+    }
      public puedeAlojar(tamanio: number): boolean {
     return this.estaLibre() && this.tamanio >= tamanio;
     }
