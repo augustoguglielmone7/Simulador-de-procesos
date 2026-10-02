@@ -26,12 +26,15 @@ export class Proceso {
 
         this.cpuRestante = cpuTotal;
     }
-
+    public comenzarEjecucion(): void {
+    this.estado = estadoProceso.Ejecutando;
+    this.quantumConsumido = 0;
+}
     esperarMemoria(): void {
         this.validarEstado(estadoProceso.Nuevo);
         this.estado = estadoProceso.EsperandoMemoria;
     }
-
+    
     admitir(): void {
         this.validarEstado(
             estadoProceso.Nuevo,
