@@ -1,0 +1,7 @@
+export enum ResultadoCPU {
+    SIN_PROCESO = "SIN_PROCESO",
+    CONTINUA = "CONTINUA",
+    TERMINADO = "TERMINADO",
+    BLOQUEADO = "BLOQUEADO",
+    ROTADO = "ROTADO"
+}
