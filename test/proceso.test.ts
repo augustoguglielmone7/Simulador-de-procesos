@@ -55,4 +55,39 @@ describe("Proceso", () => {
     });
 
 
- 
+    test("debe consumir una unidad de CPU por tick", () => {
+
+        const proceso = new Proceso(1, 200, 5);
+
+        proceso.esperarMemoria();
+        proceso.admitir();
+        proceso.despachar();
+
+        proceso.ejecutarTick();
+
+        expect(proceso.getCpuRestante())
+            .toBe(4);
+
+        expect(proceso.getQuantumConsumido())
+            .toBe(1);
+    });
+
+
+    test("debe terminar cuando CPU restante llega a cero", () => {
+
+        const proceso = new Proceso(1, 200, 1);
+
+        proceso.esperarMemoria();
+        proceso.admitir();
+        proceso.despachar();
+
+        proceso.ejecutarTick();
+
+        expect(proceso.getEstado())
+            .toBe(estadoProceso.Terminado);
+
+        expect(proceso.getCpuRestante())
+            .toBe(0);
+    });
+
+});
