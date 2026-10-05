@@ -64,4 +64,88 @@ export class Simulador {
                     : this.seguirEsperando(proceso);
             });
     }
+    private pasarAListo(proceso: Proceso): boolean {
 
+        proceso.admitir();
+        this.planificador.agregarListo(proceso);
+
+        return false;
+    }
+
+    private seguirEsperando(proceso: Proceso): boolean {
+
+        switch (proceso.getEstado()) {
+            case estadoProceso.Nuevo:
+                proceso.esperarMemoria();
+        }
+
+        return true;
+    }
+
+    private actualizarBloqueados(): void {
+
+        this.bloqueados =
+            this.bloqueados.filter(proceso => {
+
+                const desbloqueado =
+                    proceso.actualizarBloqueo();
+
+                desbloqueado &&
+                    this.planificador.agregarListo(proceso);
+
+                return !desbloqueado;
+            });
+    }
+
+    private ejecutarCPU(): void {
+
+        const proceso =
+            this.planificador.getProcesoActual()
+            ?? this.planificador.getColaListos()[0]
+            ?? null;
+
+        const resultado =
+            this.planificador.ejecutarTick();
+
+        switch (resultado) {
+
+            case ResultadoCPU.TERMINADO:
+                proceso && this.terminarProceso(proceso);
+                break;
+
+            case ResultadoCPU.BLOQUEADO:
+                proceso && this.bloqueados.push(proceso);
+                break;
+        }
+    }
+
+    private terminarProceso(proceso: Proceso): void {
+
+        this.memoria.liberar(proceso.getPid());
+        this.terminados.push(proceso);
+    }
+
+    public getTickActual(): number {
+        return this.tickActual;
+    }
+
+    public getListos(): Proceso[] {
+        return this.planificador.getColaListos();
+    }
+
+    public getBloqueados(): Proceso[] {
+        return [...this.bloqueados];
+    }
+
+    public getEsperandoMemoria(): Proceso[] {
+        return [...this.esperandoMemoria];
+    }
+
+    public getTerminados(): Proceso[] {
+        return [...this.terminados];
+    }
+
+    public getProcesoCPU(): Proceso | null {
+        return this.planificador.getProcesoActual();
+    }
+}
