@@ -86,6 +86,32 @@ describe("GestorMemoria", () => {
         expect(memoria.getBloques()[0]?.getTamanio())
             .toBe(1000);
     });
+    test("debe fallar si no existe bloque suficientemente grande", () => {
+      const memoria =
+         new GestorMemoria(500);
+
+       memoria.asignar(1, 300);
+
+       const resultado =
+          memoria.asignar(2, 250);
+
+       expect(resultado).toBe(false);
+
+       expect(memoria.getMemoriaLibre())
+         .toBe(200);
+    });
+    test("debe devolver el mayor bloque libre", () => {
+       const memoria =
+          new GestorMemoria(1000);
+
+       memoria.asignar(1, 100);
+       memoria.asignar(2, 200);
+
+       memoria.liberar(1);
+
+       expect(memoria.getMayorBloqueLibre())
+          .toBe(700);
+    });
 
 });
 

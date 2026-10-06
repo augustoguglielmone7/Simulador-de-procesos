@@ -51,5 +51,26 @@ describe("Round Robin", () => {
        expect(resultado)
         .toBe(ResultadoCPU.SIN_PROCESO);
     });
+    test("debe renovar quantum si no hay otros procesos listos", () => {
+        const planificador =
+            new PlanificadorRoundRobin(2);
+
+      const proceso =
+           new Proceso(1, 100, 5);
+
+       proceso.esperarMemoria();
+       proceso.admitir();
+
+       planificador.agregarListo(proceso);
+
+       planificador.ejecutarTick();
+       planificador.ejecutarTick();
+
+       expect(planificador.getProcesoActual()?.getPid())
+        .toBe(1);
+
+      expect(proceso.getQuantumConsumido())
+        .toBe(0);
+   });
 
 });

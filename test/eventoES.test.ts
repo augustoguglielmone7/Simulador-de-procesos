@@ -41,5 +41,22 @@ describe("EventoES", () => {
       test("debe rechazar una duración inválida", () => {
         expect(() => new EventoES(3, 0)).toThrow();
     });
+    test("debe rechazar disparo cero", () => {
+       expect(() => {
+         new EventoES(0, 2);
+        }).toThrow();
+    });
+
+    test("debe rechazar duracion cero", () => {
+       expect(() => {
+          new EventoES(3, 0);
+        }).toThrow();
+    });
+
+    test("debe rechazar disparo negativo", () => {
+       expect(() => {
+          new EventoES(-1, 2);
+       }).toThrow();
+    });
 
 });

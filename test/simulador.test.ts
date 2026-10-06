@@ -75,4 +75,33 @@ describe("Simulador", () => {
         )
      ).toThrow();
     });
+    test("debe admitir un proceso esperando cuando se libera memoria", () => {
+       const simulador =
+          new Simulador(300, 2);
+
+       const p1 =
+          new Proceso(1, 300, 1);
+
+       const p2 =
+         new Proceso(2, 300, 1);
+
+        simulador.registrarProceso(p1);
+        simulador.registrarProceso(p2);
+
+        simulador.avanzarTick();
+
+        expect(simulador.getEsperandoMemoria().length)
+          .toBe(1);
+
+        expect(simulador.getTerminados().length)
+           .toBe(1);
+
+       simulador.avanzarTick();
+
+       expect(simulador.getEsperandoMemoria().length)
+          .toBe(0);
+
+       expect(simulador.getTerminados().length)
+          .toBe(2);
+    });
 });
