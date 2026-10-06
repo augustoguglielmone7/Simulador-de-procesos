@@ -51,5 +51,19 @@ describe("Simulador", () => {
             simulador.getTerminados()[0]?.getPid()
         ).toBe(1);
     });
+    test("debe rechazar PID duplicado", () => {
+
+    const simulador = new Simulador(1024, 2);
+
+    simulador.registrarProceso(
+        new Proceso(1, 100, 2)
+    );
+
+    expect(() =>
+        simulador.registrarProceso(
+            new Proceso(1, 200, 3)
+        )
+    ).toThrow();
+    });
 
 });

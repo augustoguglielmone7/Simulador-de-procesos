@@ -1,6 +1,7 @@
 import { describe, test, expect } from "vitest";
 import { Proceso } from "../proceso/Proceso.js";
 import { estadoProceso } from "../proceso/EstadoProceso.js";
+import { EventoES } from "../proceso/EventoES.js";
 
 describe("Proceso", () => {
 
@@ -88,6 +89,37 @@ describe("Proceso", () => {
 
         expect(proceso.getCpuRestante())
             .toBe(0);
+    });
+    test("debe bloquearse por E/S", () => {
+
+    const evento = new EventoES(1, 2);
+    const proceso = new Proceso(1, 100, 5, evento);
+
+    proceso.esperarMemoria();
+    proceso.admitir();
+    proceso.despachar();
+
+    proceso.ejecutarTick();
+
+    expect(proceso.getEstado())
+        .toBe(estadoProceso.Bloqueado);
+    });
+    test("debe volver a listo después del bloqueo", () => {
+
+    const evento = new EventoES(1, 2);
+    const proceso = new Proceso(1, 100, 5, evento);
+
+    proceso.esperarMemoria();
+    proceso.admitir();
+    proceso.despachar();
+
+    proceso.ejecutarTick();
+
+    proceso.actualizarBloqueo();
+    proceso.actualizarBloqueo();
+
+    expect(proceso.getEstado())
+        .toBe(estadoProceso.Listo);
     });
 
 });
