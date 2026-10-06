@@ -92,34 +92,91 @@ describe("Proceso", () => {
     });
     test("debe bloquearse por E/S", () => {
 
-    const evento = new EventoES(1, 2);
-    const proceso = new Proceso(1, 100, 5, evento);
+      const evento = new EventoES(1, 2);
+      const proceso = new Proceso(1, 100, 5, evento);
+ 
+      proceso.esperarMemoria();
+      proceso.admitir();
+      proceso.despachar();
 
-    proceso.esperarMemoria();
-    proceso.admitir();
-    proceso.despachar();
+      proceso.ejecutarTick();
 
-    proceso.ejecutarTick();
-
-    expect(proceso.getEstado())
+      expect(proceso.getEstado())
         .toBe(estadoProceso.Bloqueado);
     });
     test("debe volver a listo después del bloqueo", () => {
 
-    const evento = new EventoES(1, 2);
-    const proceso = new Proceso(1, 100, 5, evento);
+      const evento = new EventoES(1, 2);
+      const proceso = new Proceso(1, 100, 5, evento);
 
-    proceso.esperarMemoria();
-    proceso.admitir();
-    proceso.despachar();
+      proceso.esperarMemoria();
+      proceso.admitir();
+      proceso.despachar();
 
-    proceso.ejecutarTick();
+      proceso.ejecutarTick();
 
-    proceso.actualizarBloqueo();
-    proceso.actualizarBloqueo();
+      proceso.actualizarBloqueo();
+      proceso.actualizarBloqueo();
 
-    expect(proceso.getEstado())
+      expect(proceso.getEstado())
         .toBe(estadoProceso.Listo);
     });
+    test("comenzarEjecucion debe poner el proceso en Ejecutando", () => {
+      const proceso = new Proceso(1, 100, 3);
 
+      proceso.comenzarEjecucion();
+
+      expect(proceso.getEstado())
+        .toBe(estadoProceso.Ejecutando);
+
+      expect(proceso.getQuantumConsumido())
+        .toBe(0);
+    });
+    test("debe renovar el quantum", () => {
+         const proceso = new Proceso(1, 100, 5);
+
+          proceso.esperarMemoria();
+          proceso.admitir();
+           proceso.despachar();
+
+         proceso.ejecutarTick();
+
+         expect(proceso.getQuantumConsumido()).toBe(1);
+
+         proceso.renovarQuantum();
+
+         expect(proceso.getQuantumConsumido()).toBe(0);
+        
+    });
+    test("debe informar el tiempo de bloqueo restante", () => {
+       const evento = new EventoES(1, 2);
+      const proceso = new Proceso(1, 100, 5, evento);
+ 
+       proceso.esperarMemoria();
+       proceso.admitir();
+       proceso.despachar();
+
+       proceso.ejecutarTick();
+
+        expect(proceso.getTiempoBloqueoRestante())
+        .toBe(2);
+    });
+    test("debe rechazar un PID invalido", () => {
+     expect(() => {
+        new Proceso(0, 100, 5);
+    }).toThrow();
+    });
+
+    test("debe rechazar memoria invalida", () => {
+          expect(() => {
+           new Proceso(1, 0, 5);
+           }).toThrow();
+    });
+
+    test("debe rechazar CPU invalida", () => {
+         expect(() => {
+         new Proceso(1, 100, 0);
+          }).toThrow();
+   });
+    
 });

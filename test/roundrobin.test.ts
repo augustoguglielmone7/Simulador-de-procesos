@@ -2,6 +2,7 @@ import { describe, test, expect } from "vitest";
 import { Proceso } from "../proceso/Proceso.js";
 import { PlanificadorRoundRobin }
     from "../Planificador/Roundrobin.js";
+import { ResultadoCPU } from "../Planificador/ResultadoCpu.js";
 
 describe("Round Robin", () => {
 
@@ -39,6 +40,16 @@ describe("Round Robin", () => {
 
         expect(p1.getCpuRestante())
             .toBe(0);
+    });
+     test("debe indicar SIN_PROCESO si la cola esta vacia", () => {
+        const planificador =
+        new PlanificadorRoundRobin(2);
+
+        const resultado =
+        planificador.ejecutarTick();
+
+       expect(resultado)
+        .toBe(ResultadoCPU.SIN_PROCESO);
     });
 
 });

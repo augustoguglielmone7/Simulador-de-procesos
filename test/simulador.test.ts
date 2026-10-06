@@ -53,17 +53,26 @@ describe("Simulador", () => {
     });
     test("debe rechazar PID duplicado", () => {
 
-    const simulador = new Simulador(1024, 2);
+     const simulador = new Simulador(1024, 2);
 
-    simulador.registrarProceso(
+     simulador.registrarProceso(
         new Proceso(1, 100, 2)
-    );
+     );
 
-    expect(() =>
+     expect(() =>
         simulador.registrarProceso(
             new Proceso(1, 200, 3)
         )
-    ).toThrow();
+     ).toThrow();
     });
+    test("debe rechazar un proceso mayor a la memoria total", () => {
 
+     const simulador = new Simulador(1024, 2);
+
+     expect(() =>
+        simulador.registrarProceso(
+            new Proceso(1, 2000, 3)
+        )
+     ).toThrow();
+    });
 });
