@@ -7,6 +7,8 @@ import { ResultadoCPU } from "../Planificador/ResultadoCpu.js";
 export class Simulador {
 
     private tickActual: number = 0;
+    private ticksCPUOcupada: number = 0;
+    private cambiosContexto: number = 0;
     private procesos: Map<number, Proceso> = new Map();
 
     private esperandoMemoria: Proceso[] = [];
@@ -47,6 +49,39 @@ export class Simulador {
         this.ejecutarCPU();
 
         this.tickActual++;
+    }
+    public getUtilizacionCPU(): number {
+        return this.tickActual === 0
+        ? 0
+        : (this.ticksCPUOcupada / this.tickActual) * 100;
+    } 
+    public getCambiosContexto(): number {
+        return this.cambiosContexto;
+    }
+    public getMemoriaLibre(): number {
+        return this.memoria.getMemoriaLibre();
+    }
+    public getOcupacionMemoria(): number {
+          const memoriaLibre =
+             this.memoria.getMemoriaLibre();
+
+           const memoriaOcupada =
+             this.memoriaTotal - memoriaLibre;
+
+           return (memoriaOcupada / this.memoriaTotal) * 100;
+    }
+    public getFragmentacionExterna(): number {
+          const memoriaLibre =
+             this.memoria.getMemoriaLibre();
+
+          const mayorBloque =
+             this.memoria.getMayorBloqueLibre();
+
+          return memoriaLibre === 0
+             ? 0
+             : 100 * (
+                 1 - mayorBloque / memoriaLibre
+            );
     }
 
     private admitirProcesos(): void {
@@ -98,26 +133,40 @@ export class Simulador {
     }
 
     private ejecutarCPU(): void {
-
         const proceso =
-            this.planificador.getProcesoActual()
-            ?? this.planificador.getColaListos()[0]
-            ?? null;
+           this.planificador.getProcesoActual()
+           ?? this.planificador.getColaListos()[0]
+           ?? null;
 
-        const resultado =
-            this.planificador.ejecutarTick();
+       const resultado =
+           this.planificador.ejecutarTick();
 
-        switch (resultado) {
+       switch (resultado) {
 
-            case ResultadoCPU.TERMINADO:
-                proceso && this.terminarProceso(proceso);
-                break;
+            case ResultadoCPU.SIN_PROCESO:
+              break;
 
-            case ResultadoCPU.BLOQUEADO:
-                proceso && this.bloqueados.push(proceso);
-                break;
+           case ResultadoCPU.TERMINADO:
+               this.ticksCPUOcupada++;
+               proceso && this.terminarProceso(proceso);
+               break;
+
+           case ResultadoCPU.BLOQUEADO:
+              this.ticksCPUOcupada++;
+              this.cambiosContexto++;
+              proceso && this.bloqueados.push(proceso);
+              break;
+
+           case ResultadoCPU.ROTADO:
+              this.ticksCPUOcupada++;
+              this.cambiosContexto++;
+              break;
+
+           case ResultadoCPU.CONTINUA:
+              this.ticksCPUOcupada++;
+              break;
         }
-    }
+   }
 
     private terminarProceso(proceso: Proceso): void {
 

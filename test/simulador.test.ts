@@ -80,7 +80,7 @@ describe("Simulador", () => {
           new Simulador(300, 2);
 
        const p1 =
-          new Proceso(1, 300, 1);
+          new Proceso(1, 300, 1);   
 
        const p2 =
          new Proceso(2, 300, 1);
