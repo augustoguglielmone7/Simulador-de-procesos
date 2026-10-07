@@ -104,4 +104,93 @@ describe("Simulador", () => {
        expect(simulador.getTerminados().length)
           .toBe(2);
     });
+    test("la utilizacion de CPU debe ser 0 en el tick inicial", () => {
+          const simulador = new Simulador(1000, 2);
+
+          expect(simulador.getUtilizacionCPU()).toBe(0);
+     });
+
+
+    test("la utilizacion de CPU debe ser 100 si la CPU trabajo todos los ticks", () => {
+         const simulador = new Simulador(1000, 2);
+
+         const p1 = new Proceso(1, 100, 3);
+
+         simulador.registrarProceso(p1);
+
+         simulador.avanzarTick();
+         simulador.avanzarTick();
+
+    expect(simulador.getUtilizacionCPU()).toBe(100);
+    });
+
+
+    test("debe calcular correctamente la ocupacion y memoria libre", () => {
+          const simulador = new Simulador(1000, 2);
+
+          const p1 = new Proceso(1, 300, 5);
+
+          simulador.registrarProceso(p1);
+
+          simulador.avanzarTick();
+
+          expect(simulador.getMemoriaLibre()).toBe(700);
+
+          expect(simulador.getMayorBloqueLibre()).toBe(700);
+
+         expect(simulador.getOcupacionMemoria()).toBe(30);
+    });
+
+
+    test("debe contar un cambio de contexto cuando se agota el quantum", () => {
+          const simulador = new Simulador(1000, 1);
+
+          const p1 = new Proceso(1, 100, 3);
+          const p2 = new Proceso(2, 100, 3);
+
+          simulador.registrarProceso(p1);
+          simulador.registrarProceso(p2);
+
+          simulador.avanzarTick();
+
+          expect(simulador.getCambiosContexto()).toBe(1);
+    });
+
+
+    test("no debe contar cambio de contexto si no hay otro proceso listo", () => {
+          const simulador = new Simulador(1000, 1);
+
+          const p1 = new Proceso(1, 100, 3);
+
+          simulador.registrarProceso(p1);
+
+          simulador.avanzarTick();
+
+          expect(simulador.getCambiosContexto()).toBe(0);
+    });
+
+
+     test("debe calcular una fragmentacion externa del 25 por ciento", () => {
+          const simulador = new Simulador(700, 1);
+
+         const p1 = new Proceso(1, 100, 1);
+         const p2 = new Proceso(2, 100, 10);
+         const p3 = new Proceso(3, 300, 1);
+         const p4 = new Proceso(4, 200, 10);
+
+         simulador.registrarProceso(p1);
+         simulador.registrarProceso(p2);
+         simulador.registrarProceso(p3);
+         simulador.registrarProceso(p4);
+
+         simulador.avanzarTick();
+         simulador.avanzarTick();
+         simulador.avanzarTick();
+
+         expect(simulador.getMemoriaLibre()).toBe(400);
+
+        expect(simulador.getMayorBloqueLibre()).toBe(300);
+
+        expect(simulador.getFragmentacionExterna()).toBe(25);
+    });
 });

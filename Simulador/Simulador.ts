@@ -83,6 +83,9 @@ export class Simulador {
                  1 - mayorBloque / memoriaLibre
             );
     }
+    public getMayorBloqueLibre(): number {
+          return this.memoria.getMayorBloqueLibre();
+    }
 
     private admitirProcesos(): void {
 
